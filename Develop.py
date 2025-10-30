@@ -124,7 +124,7 @@ class RecordApp(toga.App):
         results =cursor.execute("SELECT * FROM products LIMIT 7")
         results = cursor.fetchall()
 
-        # self.new_record_box.add(toga.Label("Add New Record", style=Pack(text_align="center", margin=10)))
+        # self.new_record_boxadd(toga.Label("Add New Record", style=Pack(text_align="center", margin=10)))
 
         self.results_box = toga.Box( style=Pack(direction=COLUMN))
         self.results_box.add()
