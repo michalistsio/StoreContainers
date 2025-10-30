@@ -37,6 +37,7 @@ class RecordApp(toga.App):
     def go_back(self, widget):
         self.main_window.content = self.content_box
 
+
     temp_values=[]
     async def add_to_database(self, widget):
         if self.check_box.value == False:
@@ -118,10 +119,51 @@ class RecordApp(toga.App):
         else:
             print("Not checked!")
 
+    def update_record(self, button):
+        conn = sql.connect('products.db')
+        cursor = conn.cursor()
+        cursor.execute('UPDATE products SET product_name=? ,length= ?,width=? ,weight=? WHERE product_name = ?', (self.desc_input.value,self.length_input.value,self.width_input.value,self.weight_input.value,self.desc_input.value))
+        conn.commit()
+        conn.close()
+        self.main_window.show()
+
+    def on_row_update(self, widget):
+
+        self.update_box = toga.Box(style=Pack(direction=COLUMN,  margin=20))
+        self.update_box.add()
+
+        self.label = toga.Label("Record Update", style=Pack(text_align="center", margin=10,font_weight="bold"))
+        self.desc_input = toga.TextInput(placeholder="Description", on_change=self.validate_string)
+        self.length_input = toga.TextInput(placeholder="Length", on_change=self.validate_number)
+        self.width_input = toga.TextInput(placeholder="Width", on_change=self.validate_number)
+        self.weight_input = toga.TextInput(placeholder="Weight", on_change=self.validate_number)
+        self.ok_button = toga.Button(
+            "Update Record",
+            on_press= self.update_record,
+              style=Pack(margin_top=10)
+)
+
+        self.update_box.add(self.label)
+        self.update_box.add(self.desc_input)
+        self.update_box.add(self.length_input)
+        self.update_box.add(self.width_input)
+        self.update_box.add(self.weight_input)
+        self.update_box.add(self.ok_button)
+
+        self.popupWindow= toga.Window(title = "Popup")
+        self.popupWindow.content = self.update_box
+        self.popupWindow.show()
+        #
+        # self.selected_index = widget.selection.__getattribute__("id")
+        # print(self.selected_index)
+        # self.table.data[self.selected_index] = [self.selected_index,"A",0,0,0]
+        # print(self.table.data[self.selected_index])
+
+
     def correct_record(self, button):
         conn = sql.connect('products.db')
         cursor = conn.cursor()
-        results =cursor.execute("SELECT * FROM products LIMIT 7")
+        results =cursor.execute("SELECT * FROM products ")
         results = cursor.fetchall()
 
         # self.new_record_boxadd(toga.Label("Add New Record", style=Pack(text_align="center", margin=10)))
@@ -129,13 +171,17 @@ class RecordApp(toga.App):
         self.results_box = toga.Box( style=Pack(direction=COLUMN))
         self.results_box.add()
 
-        self.label =toga.Label("Current Records", style=Pack(text_align="center"), padding_top=50)
+        self.label =toga.Label("Current Records", style=Pack(text_align="center",font_style="italic", font_weight="bold",font_size=14), margin_top=50)
         self.table = toga.Table(headings=["ID", "Description", "Length", "Width", "Weight"], data=results, style=Pack(direction=COLUMN, flex=1), margin=10)
-
         self.results_box.add(self.label)
 
         self.results_box.add(self.table)
 
+        self.update_button = toga.Button(" Update Value",  style=Pack(margin_top=10), on_press=self.on_row_update)
+        self.results_box.add(self.update_button)
+
+        self.exit_button = toga.Button("Exit Back",on_press=self.go_back,style=Pack(margin_top=10))
+        self.results_box.add(self.exit_button)
 
         self.main_window.content = self.results_box
         self.main_window.show()
