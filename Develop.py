@@ -64,7 +64,13 @@ class RecordApp(toga.App):
     async def validate_string(self, widget):
 
         value = widget.value
-        if not value.isalpha() and value != "":
+        is_letters =any(letter.isalpha() for letter in value)
+        is_digit = any(d.isdigit() for d in value)
+        if is_letters:
+            pass
+        elif is_letters and is_digit:
+            pass
+        elif is_digit:
             await self.main_window.dialog(toga.ErrorDialog("Value Error","Please enter a string!"))
 
     async def validate_number(self, widget):
@@ -116,6 +122,7 @@ class RecordApp(toga.App):
         temp_values =[]
         if widget.value:
             temp_values = [record.value for record in self.records["TextInputs"]]
+            print(temp_values)
         else:
             print("Not checked!")
 
@@ -125,7 +132,7 @@ class RecordApp(toga.App):
         cursor.execute('UPDATE products SET product_name=? ,length= ?,width=? ,weight=? WHERE product_name = ?', (self.desc_input.value,self.length_input.value,self.width_input.value,self.weight_input.value,self.desc_input.value))
         conn.commit()
         conn.close()
-        self.main_window.show()
+        self.correct_record(self.correct_button)
 
     def on_row_update(self, widget):
 
@@ -192,3 +199,7 @@ class RecordApp(toga.App):
 app = RecordApp(formal_name="Hello, world!", app_id="hello.world")
 
 app.main_loop()
+
+# Database to accept only unique values
+# Remove value from Database
+# Search button for a single value
